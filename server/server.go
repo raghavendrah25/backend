@@ -53,16 +53,16 @@ func (s *Server) Products(c *gin.Context) {
 	products := []product.Product{
 		{
 			ID:               "42",
-			Name:             "Book",
-			Description:      "A book",
-			PriceVATExcluded: money.New(100, money.EUR),
+			Name:             "Protein Powder",
+			Description:      "Muscle Protein Powder",
+			PriceVATExcluded: money.New(20, money.EUR),
 			PriceVAT:         nil,
 		},
 		{
 			ID:               "41",
-			Name:             "Book",
-			Description:      "A book",
-			PriceVATExcluded: money.New(800, money.EUR),
+			Name:             "AI & ML Book",
+			Description:      "An Artificial Intelligence and Machine Learning International Book",
+			PriceVATExcluded: money.New(50, money.EUR),
 			PriceVAT:         nil,
 		},
 	}
