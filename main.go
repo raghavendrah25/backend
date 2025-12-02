@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	myServer := server.New(server.Config{Port: 8080})
+	myServer := server.New(server.Config{Port: 8080, Token: "secretiveness"})
 
 	err := myServer.Run()
 	if err != nil {

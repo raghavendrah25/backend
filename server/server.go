@@ -13,10 +13,12 @@ import (
 type Server struct {
 	engine *gin.Engine
 	port   uint
+	token  string
 }
 
 type Config struct {
-	Port uint
+	Port  uint
+	Token string
 }
 
 func (s *Server) CORSMiddleware(c *gin.Context) {
@@ -26,6 +28,23 @@ func (s *Server) CORSMiddleware(c *gin.Context) {
 
 	if c.Request.Method == "OPTIONS" {
 		c.AbortWithStatus(204)
+		return
+	}
+
+	c.Next()
+}
+
+func (s *Server) CheckAuthorizationHeader(c *gin.Context) {
+	authValue := c.GetHeader("Authorization")
+	if authValue == "" {
+		c.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+
+	expected := fmt.Sprintf("Bearer %s", s.token)
+
+	if authValue != expected {
+		c.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}
 
@@ -82,8 +101,9 @@ func New(config Config) *Server {
 	router := &Server{
 		engine: engine,
 		port:   config.Port,
+		token:  config.Token,
 	}
-	engine.Use(router.CORSMiddleware)
+	engine.Use(router.CORSMiddleware, router.CheckAuthorizationHeader)
 	engine.GET("/products", router.Products)
 	engine.GET("/categories", router.Categories)
 	return router
