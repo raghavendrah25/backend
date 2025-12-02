@@ -19,17 +19,17 @@ type Config struct {
 	Port uint
 }
 
-func New(config Config) *Server {
-	engine := gin.Default()
+func (s *Server) CORSMiddleware(c *gin.Context) {
+	c.Header("Access-Control-Allow-Origin", "*")
+	c.Header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+	c.Header("Access-Control-Allow-Headers", "Content-Type")
 
-	router := &Server{
-		engine: engine,
-		port:   config.Port,
+	if c.Request.Method == "OPTIONS" {
+		c.AbortWithStatus(204)
+		return
 	}
 
-	engine.GET("/products", router.Products)
-	engine.GET("/categories", router.Categories)
-	return router
+	c.Next()
 }
 
 func (s *Server) Categories(c *gin.Context) {
@@ -45,7 +45,6 @@ func (s *Server) Categories(c *gin.Context) {
 			Description: "A New book",
 		},
 	}
-	c.Header("Access-Control-Allow-Origin", "*")
 	c.JSON(http.StatusOK, cat)
 }
 
@@ -66,8 +65,6 @@ func (s *Server) Products(c *gin.Context) {
 			PriceVAT:         nil,
 		},
 	}
-
-	c.Header("Access-Control-Allow-Origin", "*")
 	c.JSON(http.StatusOK, products)
 }
 
@@ -77,4 +74,17 @@ func (s *Server) Run() error {
 		return err
 	}
 	return nil
+}
+
+func New(config Config) *Server {
+	engine := gin.Default()
+
+	router := &Server{
+		engine: engine,
+		port:   config.Port,
+	}
+	engine.Use(router.CORSMiddleware)
+	engine.GET("/products", router.Products)
+	engine.GET("/categories", router.Categories)
+	return router
 }
