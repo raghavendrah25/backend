@@ -72,7 +72,7 @@ func (s *Server) Products(c *gin.Context) {
 }
 
 func (s *Server) Run() error {
-	err := s.engine.RunTLS(fmt.Sprintf(":%d", s.port), "cert.pem", "key.pem")
+	err := s.engine.Run(fmt.Sprintf(":%d", s.port))
 	if err != nil {
 		return err
 	}
