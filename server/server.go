@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/Rhymond/go-money"
@@ -11,15 +12,19 @@ import (
 
 type Server struct {
 	engine *gin.Engine
+	port   uint
 }
 
-type Config struct{}
+type Config struct {
+	Port uint
+}
 
 func New(config Config) *Server {
 	engine := gin.Default()
 
 	router := &Server{
 		engine: engine,
+		port:   config.Port,
 	}
 
 	engine.GET("/products", router.Products)
@@ -67,7 +72,7 @@ func (s *Server) Products(c *gin.Context) {
 }
 
 func (s *Server) Run() error {
-	err := s.engine.RunTLS(":8080", "cert.pem", "key.pem")
+	err := s.engine.RunTLS(fmt.Sprintf(":%d", s.port), "cert.pem", "key.pem")
 	if err != nil {
 		return err
 	}
